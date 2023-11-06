@@ -25,7 +25,7 @@ try {
 }
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://localhost:3000'],
+  origin: ['http://localhost:3000', 'https://localhost:3000', 'https://vk.com/services?w=app51784594_150756812', 'https://vk.com/app51784594'],
 }));
 
 app.use(requestLogger);

@@ -1,42 +1,42 @@
 const { Winner } = require('../models/winner');
-const BadRequestError = require('../utils/Errors/BadRequestError');
 
 module.exports.getWinners = (req, res, next) => {
-  
-  Winner.findOne({ where: { id: id } })
-    .then((user) => {
-      if (!user) {
-        return User.create({
-          id, first_name, last_name,
-        })
-        .then((newUser) => {
-          res.status(201).send(newUser)
-        })
-      }
-      return res.status(200).send(user);
+  Winner.findAll()
+    .then((winners) => {
+      const sortedWinners = winners.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+
+        return dateB - dateA;
+      });
+      return res.status(200).send(sortedWinners.slice(0, 4));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Некорректный ID'));
-      }
       return next(err);
     });
 };
 
-module.exports.createWinner = (req, res, next)  => {
+module.exports.createWinner = (req, res, next) => {
   const {
-    id, balance,
+    winner_id, first_name, last_name, photo, win, jackpot
   } = req.body;
-  
-  Winner.update({ balance: balance }, { where: { id: id } })
-    .then( async () => {
-      const currentUser =  await User.findOne({ where: { id: id } });
-      return res.status(200).send(currentUser);
+
+  Winner.create({
+    winner_id, first_name, last_name, photo, win, jackpot
+  })
+    .then(() => {
+      return Winner.findAll()
+    })
+    .then((winners) => {
+      const sortedWinners = winners.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+
+        return dateB - dateA;
+      });
+      return res.status(200).send(sortedWinners.slice(0, 4));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Некорректный ID'));
-      }
       return next(err);
     });
 };
